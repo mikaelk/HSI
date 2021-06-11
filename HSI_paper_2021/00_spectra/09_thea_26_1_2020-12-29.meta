@@ -1,0 +1,3 @@
+pixel to mm: 0.019000, minimum area threshold: 0.500000 
+ settings: {'rgb_bands': (208, 137, 81), 'length': 5, 'width': 5, 'intensity': 1, 'line': 1, 'peak_prominence': 0.002, 'smooth_window': 7} 
+ settings sobol filter: {'y_start': 0, 'y_end': -1, 'pixel_to_mm_estim': 0.025, 'use_petri_mask': False, 'petri_center': [840, 320], 'petri_radius': 800, 'threshold_background': 0.14, 'plot': True, 'min_particle_area': 0.5, 'calibration_ID_pix': 1, 'calibration_mm': 0.019}
