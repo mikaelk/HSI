@@ -39,7 +39,7 @@ default settings for the peak finding algorithm
 ######################################################
 '''
 defaults = {
-    'peak_prominence': 0.002,
+    'peak_prominence': None,
     'smooth_window': 7 # odd integer
 }
 

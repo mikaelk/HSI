@@ -7,24 +7,15 @@ Created on Fri Jun 11 13:43:01 2021
 """
 
 import os
-# from spectral import imshow, save_rgb
-# import spectral.io.envi as envi
 import numpy as np
 import matplotlib.pyplot as plt
-
-# from pathlib import Path
 from scipy import signal
-
-# from scipy.ndimage.filters import gaussian_filter
-# from skimage.transform import rescale
 import pandas as pd
-# import re
-# from argparse import ArgumentParser
 import matplotlib.image as mpimg
 from sklearn.gaussian_process import GaussianProcessClassifier
 from sklearn.ensemble import RandomForestClassifier
 import configuration as cmp
-import sys
+
 
 def value_in_range(val,lower,upper):
     i_valid = np.where((val > lower) & (val < upper))[0]
@@ -52,21 +43,16 @@ def calculate_and_label(file, mode='predict', classifier=None, PLOT=True, plot_f
     if not os.path.exists(out_folder):
         os.mkdir(out_folder)
         
-    # label_file = os.path.join(out_folder,'label_'+label)
-
-    # figures_folder = '/Volumes/externe_SSD/kaandorp/Data/SO279/'+label+'/output/'
-    # folder_spectra_info = '/Volumes/externe_SSD/kaandorp/Data/SO279/00_spectra/'
-    # file_raman_label = os.path.join('/Volumes/externe_SSD/kaandorp/Data/SO279/00_labels/','label_'+label)
-    
-    
     df_info_classification = None
     
     data = pd.read_csv(file)
     wavelengths = np.array(list(data.columns)[1:],dtype=float)
     spectra = data.values[:,1:]
 
-    smooth_window = 7
+    smooth_window = cmp.defaults['smooth_window']
+    prominence = cmp.defaults['peak_prominence']
 
+    #location ranges of the throughs to look for:
     feature_ranges_min = np.array([[1538,1542],
                                    [1193,1199],
                                    [1194,1218],
@@ -76,8 +62,8 @@ def calculate_and_label(file, mode='predict', classifier=None, PLOT=True, plot_f
                                    [1205,1212],
                                    [1412,1416],
                                    [1675,1682]])
-   
-                                   # feature_ranges_min_prom = 
+    
+    #location ranges of the peaks to look for:
     feature_ranges_max = np.array([[970,995],
                                    [1275,1310],
                                    [1310,1330],
@@ -125,8 +111,8 @@ def calculate_and_label(file, mode='predict', classifier=None, PLOT=True, plot_f
         spectrum = spectra[i1,:]    
         
         smoothed = signal.savgol_filter(spectrum, window_length=smooth_window, polyorder=2)
-        minimas,_ = signal.find_peaks(-smoothed, prominence=None)
-        maximas,_ = signal.find_peaks(smoothed, prominence=None)
+        minimas,_ = signal.find_peaks(-smoothed, prominence=prominence)
+        maximas,_ = signal.find_peaks(smoothed, prominence=prominence)
 
         wl_minimas = wavelengths[minimas]
         wl_maximas = wavelengths[maximas]
@@ -201,8 +187,6 @@ def calculate_and_label(file, mode='predict', classifier=None, PLOT=True, plot_f
             
         if mode == 'label':
             material_input = input('material? (Segment %i) \n' % c)
-            # print('Material? (Segment %i) \n' % c)
-            # material_input = sys.argv
             table_input = np.append(peak_presence,material_input)
             
             df.loc[c] = table_input
